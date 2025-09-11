@@ -37,6 +37,7 @@ from dataclasses import dataclass
 
 import numpy as np
 import numpy.typing as npt
+import matplotlib.pyplot as plt
 
 
 @dataclass
@@ -73,18 +74,22 @@ def generate_fake_data(
     return x_points, y_points
 
 
-def get_gradient(x: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+def get_gradient(
+    model: Model, x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+) -> npt.NDArray[np.float64]:
     """
     - For gradient descent, we need the gradient. We implement the gradient function which will output
     the gradient vector of size 2 each dimension representing gradient of slope and intercept for the MSE
     loss function respectively.
 
     - MSE(x,y) = 1/N sum_(i=1)^N (y_i-(mx_i+b))^2
-    - dA(x)/dx = 2x
+    - A(u) = u^2 = (y_i-(mx_i+b))^2
+    - dA(u)/du = 2u = 2(y_i-(mx_i+b))
     - dB(m,b)/dm = -x
     - dB(m,b)/db = -1
     """
-    return np.array((-2 * (x**2), -2 * x))
+    u = y - (model.slope * x + model.intercept)
+    return np.array((-2 * x * u, -1 * u))
 
 
 def step(
@@ -97,7 +102,7 @@ def step(
     - A step function does a single update pass. It will sample data from the training dataset, calculate
     the gradient, and update the parameters a single time.
     """
-    gradients = get_gradient(x_points).mean(axis=-1)
+    gradients = get_gradient(model, x_points, y_points).mean(axis=-1)
     # negative because gradient points to the upward (increasing the loss function). But we want the opposite.
     return Model(
         slope=model.slope - lr * gradients[0],
@@ -130,7 +135,7 @@ def predict(
 
 
 if __name__ == "__main__":
-    num_data = 1000
+    num_data = 10000
     lr = 1e-3
     x_points, y_points = generate_fake_data(num_data)
 
@@ -138,3 +143,13 @@ if __name__ == "__main__":
     model = train(model, x_points, y_points, lr)
     mse = predict(model, x_points, y_points)
     print(f"MSE: {mse:.3f}")
+    print(f"Slope: {model.slope:.3f}")
+    print(f"Intercept: {model.intercept:.3f}")
+
+    xs = np.array([min(x_points), max(x_points)])
+    ys = model.slope * xs + model.intercept
+
+    plt.style.use("dark_background")
+    plt.scatter(x_points, y_points)
+    plt.plot(xs, ys)
+    plt.show()
