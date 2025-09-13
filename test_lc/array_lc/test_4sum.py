@@ -30,12 +30,23 @@ class Solution:
                     diff = target - items_sum
 
                     if diff < 0:
-                        l = self.move(nums, l, k)
+                        l -= 1
                     elif diff > 0:
-                        k = self.move(nums, k, l)
+                        k += 1
                     else:
-                        k = self.move(nums, k, l)
                         answers.append(items)
+                        # here, we increase/decrease both k and l
+                        # because if we only change one of them, it will not equal the target
+                        l -= 1
+                        k += 1
+                        # and since duplicates are not allowed, we check the previous value 
+                        # continue incrementing if duplicate
+                        while l > k and nums[l] == nums[l+1]:
+                            l -= 1
+                        while l > k and nums[k] == nums[k-1]:
+                            k += 1
+                            
+                        
         return answers
     
     def move(self, nums: list[int], start: int, end: int) -> int:
@@ -55,7 +66,8 @@ class Test(ut.TestCase):
     def test(self) -> None:
         cases = [
             ([1,0,-1,0,-2,2], 0, [[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]),
-            ([2,2,2,2,2], 8, [[2,2,2,2]])
+            ([2,2,2,2,2], 8, [[2,2,2,2]]),
+            ([-2,-1,-1,1,1,2,2], 0, [[-2,-1,1,2],[-1,-1,1,1]])
         ]
         solution = Solution()
         for i, (input, target, expected) in enumerate(cases):
