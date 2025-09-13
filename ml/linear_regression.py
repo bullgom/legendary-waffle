@@ -135,8 +135,8 @@ def predict(
 
 
 if __name__ == "__main__":
-    num_data = 10000
-    lr = 1e-2
+    num_data = 1000000
+    lr = 1e-3
     x_points, y_points = generate_fake_data(num_data)
 
     model = Model()
@@ -151,5 +151,5 @@ if __name__ == "__main__":
 
     plt.style.use("dark_background")
     plt.scatter(x_points, y_points)
-    plt.plot(xs, ys)
+    plt.plot(xs, ys, c="red")
     plt.show()
