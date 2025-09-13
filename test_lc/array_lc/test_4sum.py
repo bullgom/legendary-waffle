@@ -8,10 +8,18 @@ class Solution:
         answers = []
     
         for i in range(N-3):
+            if i > 0 and nums[i] == nums[i - 1]:
+                continue
             
 
             ni = nums[i]
             for j in range(i+1, N - 2):
+                # check with the backwards.
+                # not with the forwards
+                # so that we avoid "already done" ones 
+                if j > i + 1 and nums[j] == nums[j - 1]:
+                    continue
+
                 nj = nums[j]
                 k = j + 1
                 l = N - 1
@@ -34,7 +42,10 @@ class Solution:
         direction = (end-start) // abs(end - start)
         start += direction
 
-        for i in range(start, end, direction):
+        for i in range(start, end+direction, direction):
+            if (i + direction) >= len(nums):
+                return end
+            
             if nums[i] != nums[i + direction]:
                 return i
         return end
@@ -54,6 +65,3 @@ class Test(ut.TestCase):
                 
                 for output_row, expected_row in zip(output, expected):
                     self.assertSequenceEqual(output_row, expected_row)
-
-if __name__ == "__main__":
-    ut.main()
