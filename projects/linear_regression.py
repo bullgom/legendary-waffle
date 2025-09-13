@@ -136,7 +136,7 @@ def predict(
 
 if __name__ == "__main__":
     num_data = 10000
-    lr = 1e-3
+    lr = 1e-2
     x_points, y_points = generate_fake_data(num_data)
 
     model = Model()
